@@ -1,14 +1,11 @@
 plugins {
     alias(libs.plugins.android.library)
+    `maven-publish`
 }
 
 android {
     namespace = "com.basicutil"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 24
@@ -30,6 +27,13 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
+    publishing { // Add this
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -43,4 +47,18 @@ dependencies {
     // Lifecycle / Activity
     implementation(libs.lifecycle.runtime)
     implementation(libs.activity.compose)
+}
+
+publishing {
+    publications {
+        create("release", MavenPublication::class) {
+            groupId = "com.github.monica255"
+            artifactId = "basicutil"
+            version = "0.0.1"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
